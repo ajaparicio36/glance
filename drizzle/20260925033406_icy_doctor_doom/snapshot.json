@@ -1,0 +1,282 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "id": "d309d275-db65-4036-8609-61df73d30db1",
+  "prevIds": [
+    "00000000-0000-0000-0000-000000000000"
+  ],
+  "ddl": [
+    {
+      "name": "demo_devices",
+      "entityType": "tables"
+    },
+    {
+      "name": "geofence",
+      "entityType": "tables"
+    },
+    {
+      "name": "violations",
+      "entityType": "tables"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "demo_devices"
+    },
+    {
+      "type": "real",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "latitude",
+      "entityType": "columns",
+      "table": "demo_devices"
+    },
+    {
+      "type": "real",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "longitude",
+      "entityType": "columns",
+      "table": "demo_devices"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": "false",
+      "generated": null,
+      "name": "buzzer_enabled",
+      "entityType": "columns",
+      "table": "demo_devices"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "geofence"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "vertices",
+      "entityType": "columns",
+      "table": "geofence"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "updated_at",
+      "entityType": "columns",
+      "table": "geofence"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": true,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "violations"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "device_id",
+      "entityType": "columns",
+      "table": "violations"
+    },
+    {
+      "type": "real",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "outside_latitude",
+      "entityType": "columns",
+      "table": "violations"
+    },
+    {
+      "type": "real",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "outside_longitude",
+      "entityType": "columns",
+      "table": "violations"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "outside_at",
+      "entityType": "columns",
+      "table": "violations"
+    },
+    {
+      "type": "real",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "return_latitude",
+      "entityType": "columns",
+      "table": "violations"
+    },
+    {
+      "type": "real",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "return_longitude",
+      "entityType": "columns",
+      "table": "violations"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "resolution",
+      "entityType": "columns",
+      "table": "violations"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "resolved_at",
+      "entityType": "columns",
+      "table": "violations"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "demo_devices_pk",
+      "table": "demo_devices",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "geofence_pk",
+      "table": "geofence",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "violations_pk",
+      "table": "violations",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        {
+          "value": "lower(\"id\")",
+          "isExpression": true
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "origin": "manual",
+      "name": "demo_devices_id_case_insensitive",
+      "entityType": "indexes",
+      "table": "demo_devices"
+    },
+    {
+      "columns": [
+        {
+          "value": "device_id",
+          "isExpression": false
+        }
+      ],
+      "isUnique": true,
+      "where": "\"violations\".\"resolution\" IS NULL",
+      "origin": "manual",
+      "name": "violations_one_active_per_device",
+      "entityType": "indexes",
+      "table": "violations"
+    },
+    {
+      "columns": [
+        {
+          "value": "outside_at",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "origin": "manual",
+      "name": "violations_outside_at",
+      "entityType": "indexes",
+      "table": "violations"
+    },
+    {
+      "value": "length(trim(\"id\")) > 0",
+      "name": "demo_devices_id_not_blank",
+      "entityType": "checks",
+      "table": "demo_devices"
+    },
+    {
+      "value": "(\"latitude\" IS NULL AND \"longitude\" IS NULL) OR (\"latitude\" IS NOT NULL AND \"longitude\" IS NOT NULL AND \"latitude\" BETWEEN -90 AND 90 AND \"longitude\" BETWEEN -180 AND 180)",
+      "name": "demo_devices_position_pair",
+      "entityType": "checks",
+      "table": "demo_devices"
+    },
+    {
+      "value": "\"id\" = 1",
+      "name": "geofence_singleton_id",
+      "entityType": "checks",
+      "table": "geofence"
+    },
+    {
+      "value": "\"outside_latitude\" BETWEEN -90 AND 90 AND \"outside_longitude\" BETWEEN -180 AND 180",
+      "name": "violations_outside_coordinates",
+      "entityType": "checks",
+      "table": "violations"
+    },
+    {
+      "value": "(\n        \"resolution\" IS NULL\n        AND \"return_latitude\" IS NULL\n        AND \"return_longitude\" IS NULL\n        AND \"resolved_at\" IS NULL\n      ) OR (\n        \"resolution\" = 'returned'\n        AND \"return_latitude\" IS NOT NULL\n        AND \"return_longitude\" IS NOT NULL\n        AND \"return_latitude\" BETWEEN -90 AND 90\n        AND \"return_longitude\" BETWEEN -180 AND 180\n        AND \"resolved_at\" IS NOT NULL\n      ) OR (\n        \"resolution\" = 'fence_changed'\n        AND \"return_latitude\" IS NULL\n        AND \"return_longitude\" IS NULL\n        AND \"resolved_at\" IS NOT NULL\n      )",
+      "name": "violations_resolution_state",
+      "entityType": "checks",
+      "table": "violations"
+    }
+  ],
+  "renames": []
+}
