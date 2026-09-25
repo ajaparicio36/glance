@@ -186,7 +186,7 @@ const persistPosition = (
     if (!resolvedViolation) throw new Error('The returned violation could not be reloaded.');
     violation = toViolation(resolvedViolation);
   } else if (decision.createViolation) {
-    const createdViolation = tx
+    const inserted = tx
       .insert(violationsTable)
       .values({
         deviceId,
@@ -198,7 +198,11 @@ const persistPosition = (
         resolution: null,
         resolvedAt: null,
       })
-      .returning()
+      .run();
+    const createdViolation = tx
+      .select()
+      .from(violationsTable)
+      .where(eq(violationsTable.id, inserted.lastInsertRowId))
       .get();
     if (!createdViolation) throw new Error('The breach could not be recorded.');
     violation = toViolation(createdViolation);
