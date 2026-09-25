@@ -27,6 +27,7 @@ import type {
   Coordinate,
   GlanceMapProps,
 } from './glance-map.types';
+import { validatePolygon } from '@/domain/geofence';
 
 export type {
   Coordinate,
@@ -124,21 +125,33 @@ export default function GlanceMap({
       ),
     [polygon],
   );
-  const previewGeometry = useMemo<GeoJSON.Geometry | null>(() => {
-    if (previewVertices.length < 2) return null;
+  const previewPolygon = useMemo<GeoJSON.Polygon | null>(() => {
+    if (previewVertices.length < 3) return null;
 
-    if (previewVertices.length >= 3) {
-      return { type: 'Polygon', coordinates: [closeRing(previewVertices)] };
-    }
+    const result = validatePolygon(
+      previewVertices.map(([longitude, latitude]) => ({ latitude, longitude })),
+    );
+    if (!result.valid) return null;
+
+    return { type: 'Polygon', coordinates: [closeRing(previewVertices)] };
+  }, [previewVertices]);
+  const previewLine = useMemo<GeoJSON.LineString | null>(() => {
+    if (previewVertices.length < 2) return null;
 
     return {
       type: 'LineString',
-      coordinates: previewVertices.map(([longitude, latitude]) => [longitude, latitude]),
+      coordinates: previewPolygon
+        ? closeRing(previewVertices)
+        : previewVertices.map(([longitude, latitude]) => [longitude, latitude]),
     };
-  }, [previewVertices]);
-  const previewData = useMemo(
-    () => toFeatureCollection(previewGeometry),
-    [previewGeometry],
+  }, [previewPolygon, previewVertices]);
+  const previewLineData = useMemo(
+    () => toFeatureCollection(previewLine),
+    [previewLine],
+  );
+  const previewPolygonData = useMemo(
+    () => toFeatureCollection(previewPolygon),
+    [previewPolygon],
   );
 
   const fitToSavedContent = useCallback(() => {
@@ -219,7 +232,7 @@ export default function GlanceMap({
         />
 
         {polygon.length >= 3 ? (
-          <GeoJSONSource data={savedPolygon} id="glance-saved-fence">
+          <GeoJSONSource data={savedPolygon} id="glance-saved-fence" key="glance-saved-fence">
             <Layer
               id="glance-saved-fence-fill"
               paint={{ 'fill-color': '#0f766e', 'fill-opacity': 0.15 }}
@@ -233,19 +246,30 @@ export default function GlanceMap({
           </GeoJSONSource>
         ) : null}
 
-        {editMode && previewGeometry ? (
-          <GeoJSONSource data={previewData} id="glance-fence-preview">
-            {previewGeometry.type === 'Polygon' ? (
-              <Layer
-                id="glance-fence-preview-fill"
-                paint={{ 'fill-color': '#f59e0b', 'fill-opacity': 0.18 }}
-                type="fill"
-              />
-            ) : null}
+        {editMode && previewLine ? (
+          <GeoJSONSource
+            data={previewLineData}
+            id="glance-fence-preview-line-source"
+            key="glance-fence-preview-line-source"
+          >
             <Layer
               id="glance-fence-preview-line"
               paint={{ 'line-color': '#d97706', 'line-width': 3, 'line-dasharray': [1.5, 1] }}
               type="line"
+            />
+          </GeoJSONSource>
+        ) : null}
+
+        {editMode && previewPolygon ? (
+          <GeoJSONSource
+            data={previewPolygonData}
+            id="glance-fence-preview-fill-source"
+            key="glance-fence-preview-fill-source"
+          >
+            <Layer
+              id="glance-fence-preview-fill"
+              paint={{ 'fill-color': '#f59e0b', 'fill-opacity': 0.18 }}
+              type="fill"
             />
           </GeoJSONSource>
         ) : null}
