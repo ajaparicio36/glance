@@ -17,6 +17,7 @@ import {
 } from '@/data/demo-store';
 import { isPointInPolygon } from '@/domain/geofence';
 import { useDemoSnapshot } from '@/hooks/use-demo-snapshot';
+import { getErrorMessage } from '@/utils/error-message';
 
 type MapActionName = 'inside' | 'breach' | 'return' | 'buzzer';
 
@@ -40,12 +41,6 @@ function MapAction({ accessibilityLabel, disabled, icon, label, onPress }: MapAc
       <Text className="text-center text-[10px] font-semibold leading-3 text-[#314A3C]">{label}</Text>
     </Pressable>
   );
-}
-
-function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) return error.message;
-  if (typeof error === 'string') return error;
-  return 'The action could not be completed. Try again.';
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -168,7 +163,7 @@ export default function MapScreen() {
       try {
         result = await operation();
       } catch (error) {
-        setActionError(getErrorMessage(error));
+        setActionError(getErrorMessage(error, 'The action could not be completed. Try again.'));
         return;
       }
 
@@ -182,7 +177,7 @@ export default function MapScreen() {
       try {
         await refresh();
       } catch (error) {
-        setActionError(`Action saved, but the map could not be refreshed: ${getErrorMessage(error)}`);
+        setActionError(`Action saved, but the map could not be refreshed: ${getErrorMessage(error, 'The map could not be refreshed.')}`);
       }
     } finally {
       setPendingAction(null);
@@ -268,7 +263,9 @@ export default function MapScreen() {
               <Pressable
                 accessibilityRole="button"
                 onPress={() => {
-                  void refresh().catch((error: unknown) => setActionError(getErrorMessage(error)));
+                  void refresh().catch((error: unknown) =>
+                    setActionError(getErrorMessage(error, 'The map could not be refreshed.')),
+                  );
                 }}
                 className="mt-3 min-h-11 items-center justify-center rounded-2xl bg-[#35664D] px-4 active:opacity-75">
                 <Text className="font-semibold text-white">Try again</Text>

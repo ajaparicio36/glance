@@ -14,16 +14,11 @@ import {
 } from '@/data/demo-store';
 import { isPointInPolygon, validatePolygon } from '@/domain/geofence';
 import { useDemoSnapshot } from '@/hooks/use-demo-snapshot';
+import { getErrorMessage } from '@/utils/error-message';
 
 type SetupAction = 'geofence' | 'device' | `remove:${string}` | null;
 
 const NO_DEVICES: DemoDevice[] = [];
-
-function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) return error.message;
-  if (typeof error === 'string') return error;
-  return 'The change could not be saved. Try again.';
-}
 
 function toMapCoordinate(position: { latitude: number; longitude: number }): MapCoordinate {
   return [position.longitude, position.latitude];
@@ -103,10 +98,10 @@ export default function SetupScreen() {
       try {
         await refresh();
       } catch (error) {
-        setActionError(`Geofence saved, but the setup data could not be refreshed: ${getErrorMessage(error)}`);
+        setActionError(`Geofence saved, but the setup data could not be refreshed: ${getErrorMessage(error, 'The setup data could not be refreshed.')}`);
       }
     } catch (error) {
-      setActionError(getErrorMessage(error));
+      setActionError(getErrorMessage(error, 'The change could not be saved. Try again.'));
     } finally {
       setPendingAction(null);
     }
@@ -162,10 +157,10 @@ export default function SetupScreen() {
       try {
         await refresh();
       } catch (error) {
-        setActionError(`Device added, but the setup list could not be refreshed: ${getErrorMessage(error)}`);
+        setActionError(`Device added, but the setup list could not be refreshed: ${getErrorMessage(error, 'The setup list could not be refreshed.')}`);
       }
     } catch (error) {
-      setActionError(getErrorMessage(error));
+      setActionError(getErrorMessage(error, 'The change could not be saved. Try again.'));
     } finally {
       setPendingAction(null);
     }
@@ -182,10 +177,10 @@ export default function SetupScreen() {
       try {
         await refresh();
       } catch (error) {
-        setActionError(`Device removed, but the setup list could not be refreshed: ${getErrorMessage(error)}`);
+        setActionError(`Device removed, but the setup list could not be refreshed: ${getErrorMessage(error, 'The setup list could not be refreshed.')}`);
       }
     } catch (error) {
-      setActionError(getErrorMessage(error));
+      setActionError(getErrorMessage(error, 'The change could not be saved. Try again.'));
     } finally {
       setPendingAction(null);
     }
@@ -449,7 +444,9 @@ export default function SetupScreen() {
                 accessibilityRole="button"
                 onPress={() => {
                   setActionError(null);
-                  void refresh().catch((error: unknown) => setActionError(getErrorMessage(error)));
+                  void refresh().catch((error: unknown) =>
+                    setActionError(getErrorMessage(error, 'The setup data could not be refreshed.')),
+                  );
                 }}
                 className="min-h-11 items-center justify-center rounded-2xl bg-[#35664D] px-4 active:opacity-75">
                 <Text className="font-semibold text-white">Try again</Text>

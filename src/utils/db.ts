@@ -26,6 +26,7 @@ function removeLegacyGeofenceTable(): void {
 export function initializeDatabase(): Promise<void> {
   migrationsReady ??= Promise.resolve()
     .then(() => {
+      expo.execSync('PRAGMA journal_mode = WAL');
       removeLegacyGeofenceTable();
       return migrate(db, { migrations: appMigrations });
     })

@@ -2,12 +2,7 @@ import { useCallback, useState } from 'react';
 import { useFocusEffect } from 'expo-router';
 
 import { getDemoSnapshot, type DemoSnapshot } from '@/data/demo-store';
-
-function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) return error.message;
-  if (typeof error === 'string') return error;
-  return 'Could not load the saved demo state.';
-}
+import { getErrorMessage } from '@/utils/error-message';
 
 export function useDemoSnapshot() {
   const [snapshot, setSnapshot] = useState<DemoSnapshot | null>(null);
@@ -25,7 +20,7 @@ export function useDemoSnapshot() {
           setLoadError(null);
         })
         .catch((error: unknown) => {
-          if (isActive) setLoadError(getErrorMessage(error));
+          if (isActive) setLoadError(getErrorMessage(error, 'Could not load the saved demo state.'));
         })
         .finally(() => {
           if (isActive) setIsLoading(false);
