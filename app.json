@@ -33,7 +33,17 @@
           "imageWidth": 76
         }
       ],
-      "expo-sqlite"
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf",
+            "./node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"
+          ]
+        }
+      ],
+      "expo-sqlite",
+      "@maplibre/maplibre-react-native"
     ],
     "experiments": {
       "typedRoutes": true,
